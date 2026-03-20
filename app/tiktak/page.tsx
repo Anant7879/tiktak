@@ -1,65 +1,200 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { useMemo, useState } from "react";
+
+type CellValue = "X" | "O" | null;
+type WinnerResult = {
+  winner: "X" | "O" | null;
+  line: number[];
+};
+
+const winningLines: number[][] = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6],
+];
+
+function calculateWinner(board: CellValue[]): WinnerResult {
+  for (const [a, b, c] of winningLines) {
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return {
+        winner: board[a],
+        line: [a, b, c],
+      };
+    }
+  }
+
+  return {
+    winner: null,
+    line: [],
+  };
+}
+
+export default function TiktakPage() {
+  const [board, setBoard] = useState<CellValue[]>(Array(9).fill(null));
+  const [isXTurn, setIsXTurn] = useState(true);
+  const [score, setScore] = useState({ X: 0, O: 0, draws: 0 });
+
+  const { winner, line } = useMemo(() => calculateWinner(board), [board]);
+  const isDraw = board.every(Boolean) && !winner;
+
+  const status = winner
+    ? `Player ${winner} wins!`
+    : isDraw
+      ? "It is a draw."
+      : `Player ${isXTurn ? "X" : "O"}, your move.`;
+
+  function handleClick(index: number) {
+    if (board[index] || winner) {
+      return;
+    }
+
+    const nextBoard = [...board];
+    nextBoard[index] = isXTurn ? "X" : "O";
+
+    const result = calculateWinner(nextBoard);
+    const nextDraw = nextBoard.every(Boolean) && !result.winner;
+
+    setBoard(nextBoard);
+
+    if (result.winner) {
+      const winningPlayer = result.winner;
+      setScore((current) => ({
+        ...current,
+        [winningPlayer]: current[winningPlayer] + 1,
+      }));
+      return;
+    }
+
+    if (nextDraw) {
+      setScore((current) => ({
+        ...current,
+        draws: current.draws + 1,
+      }));
+      return;
+    }
+
+    setIsXTurn((current) => !current);
+  }
+
+  function resetBoard() {
+    setBoard(Array(9).fill(null));
+    setIsXTurn(true);
+  }
+
+  function resetAll() {
+    resetBoard();
+    setScore({ X: 0, O: 0, draws: 0 });
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-blue">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/Bite.jpg"
-          alt="bitezy logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(125,211,252,0.3),_transparent_30%),linear-gradient(180deg,_#eff6ff_0%,_#dbeafe_45%,_#bfdbfe_100%)] px-6 py-10 text-slate-900 sm:px-10 lg:px-16">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-3">
+            <Link
+              href="/"
+              className="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-900 hover:text-slate-950"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Back to Home
+            </Link>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-blue-700">
+                Tiktak Game Room
+              </p>
+              <h1 className="mt-2 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
+                Tic Tac Toe
+              </h1>
+              <p className="mt-3 max-w-2xl text-lg leading-8 text-slate-700">
+                Two players, one board, quick rematches. First to complete a line
+                takes the round.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 rounded-[2rem] border border-white/60 bg-white/70 p-3 shadow-lg shadow-blue-200/60 backdrop-blur sm:w-fit">
+            {[
+              ["Player X", score.X],
+              ["Player O", score.O],
+              ["Draws", score.draws],
+            ].map(([label, value]) => (
+              <div key={label} className="min-w-24 rounded-2xl bg-slate-950 px-4 py-3 text-center text-white">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
+                  {label}
+                </p>
+                <p className="mt-2 text-3xl font-black">{value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+          <section className="rounded-[2rem] border border-white/60 bg-white/80 p-5 shadow-2xl shadow-blue-200/60 backdrop-blur sm:p-8">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-blue-700">
+                  Match Status
+                </p>
+                <h2 className="mt-2 text-3xl font-black text-slate-950">{status}</h2>
+              </div>
+              <button
+                type="button"
+                onClick={resetBoard}
+                className="inline-flex h-12 items-center justify-center rounded-full bg-slate-950 px-6 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-blue-700"
+              >
+                New Game
+              </button>
+            </div>
+
+            <div className="mt-8 grid grid-cols-3 gap-4 sm:gap-5">
+              {board.map((cell, index) => {
+                const isWinningCell = line.includes(index);
+
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleClick(index)}
+                    className={`aspect-square rounded-[1.75rem] border text-5xl font-black transition sm:text-6xl ${
+                      isWinningCell
+                        ? "border-emerald-400 bg-emerald-100 text-emerald-700 shadow-lg shadow-emerald-200"
+                        : "border-slate-200 bg-slate-50 text-slate-900 hover:border-blue-400 hover:bg-blue-50"
+                    } ${cell ? "cursor-default" : "cursor-pointer"}`}
+                    aria-label={`Cell ${index + 1}${cell ? `, ${cell}` : ""}`}
+                  >
+                    {cell}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <aside className="rounded-[2rem] border border-white/60 bg-slate-950 p-6 text-white shadow-2xl shadow-slate-300/70">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200">
+              How It Works
+            </p>
+            <div className="mt-6 space-y-5 text-base leading-7 text-slate-300">
+              <p>Player X always opens the round.</p>
+              <p>Tap any empty square to place your mark.</p>
+              <p>Make three in a row across, down, or diagonally to win.</p>
+              <p>The scoreboard stays until you hit a full reset.</p>
+            </div>
+            <button
+              type="button"
+              onClick={resetAll}
+              className="mt-8 inline-flex h-12 w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 text-sm font-bold text-white transition hover:border-cyan-300 hover:bg-cyan-400/20"
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Reset Scoreboard
+            </button>
+          </aside>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
