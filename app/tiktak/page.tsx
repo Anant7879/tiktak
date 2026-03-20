@@ -94,8 +94,8 @@ export default function TiktakPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(125,211,252,0.3),_transparent_30%),linear-gradient(180deg,_#eff6ff_0%,_#dbeafe_45%,_#bfdbfe_100%)] px-6 py-10 text-slate-900 sm:px-10 lg:px-16">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(125,211,252,0.3),_transparent_30%),linear-gradient(180deg,_#eff6ff_0%,_#dbeafe_45%,_#bfdbfe_100%)] px-4 py-6 text-slate-900 sm:px-6 sm:py-8 lg:px-10">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
             <Link
@@ -118,41 +118,41 @@ export default function TiktakPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 rounded-[2rem] border border-white/60 bg-white/70 p-3 shadow-lg shadow-blue-200/60 backdrop-blur sm:w-fit">
+          <div className="grid grid-cols-3 gap-2 rounded-[1.75rem] border border-white/60 bg-white/70 p-2.5 shadow-lg shadow-blue-200/60 backdrop-blur sm:w-fit">
             {[
               ["Player X", score.X],
               ["Player O", score.O],
               ["Draws", score.draws],
             ].map(([label, value]) => (
-              <div key={label} className="min-w-24 rounded-2xl bg-slate-950 px-4 py-3 text-center text-white">
+              <div key={label} className="min-w-20 rounded-2xl bg-slate-950 px-3 py-2.5 text-center text-white">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
                   {label}
                 </p>
-                <p className="mt-2 text-3xl font-black">{value}</p>
+                <p className="mt-1.5 text-2xl font-black">{value}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-          <section className="rounded-[2rem] border border-white/60 bg-white/80 p-5 shadow-2xl shadow-blue-200/60 backdrop-blur sm:p-8">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+          <section className="rounded-[2rem] border border-white/60 bg-white/80 p-4 shadow-2xl shadow-blue-200/60 backdrop-blur sm:p-6">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-blue-700">
                   Match Status
                 </p>
-                <h2 className="mt-2 text-3xl font-black text-slate-950">{status}</h2>
+                <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">{status}</h2>
               </div>
               <button
                 type="button"
                 onClick={resetBoard}
-                className="inline-flex h-12 items-center justify-center rounded-full bg-slate-950 px-6 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-blue-700"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-slate-950 px-5 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-blue-700"
               >
                 New Game
               </button>
             </div>
 
-            <div className="mt-8 grid grid-cols-3 gap-4 sm:gap-5">
+            <div className="mx-auto mt-6 grid w-full max-w-[22rem] grid-cols-3 gap-3 sm:max-w-[25rem] sm:gap-4">
               {board.map((cell, index) => {
                 const isWinningCell = line.includes(index);
 
@@ -161,10 +161,10 @@ export default function TiktakPage() {
                     key={index}
                     type="button"
                     onClick={() => handleClick(index)}
-                    className={`aspect-square rounded-[1.75rem] border text-5xl font-black transition sm:text-6xl ${
+                    className={`aspect-square rounded-[1.4rem] border text-6xl font-black leading-none transition sm:text-7xl ${
                       isWinningCell
                         ? "border-emerald-400 bg-emerald-100 text-emerald-700 shadow-lg shadow-emerald-200"
-                        : "border-slate-200 bg-slate-50 text-slate-900 hover:border-blue-400 hover:bg-blue-50"
+                        : "border-slate-500 bg-slate-200 text-slate-900 hover:border-blue-400 hover:bg-blue-50"
                     } ${cell ? "cursor-default" : "cursor-pointer"}`}
                     aria-label={`Cell ${index + 1}${cell ? `, ${cell}` : ""}`}
                   >
@@ -175,7 +175,7 @@ export default function TiktakPage() {
             </div>
           </section>
 
-          <aside className="rounded-[2rem] border border-white/60 bg-slate-950 p-6 text-white shadow-2xl shadow-slate-300/70">
+          <aside className="rounded-[2rem] border border-white/60 bg-slate-950 p-5 text-white shadow-2xl shadow-slate-300/70">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200">
               How It Works
             </p>
@@ -188,7 +188,7 @@ export default function TiktakPage() {
             <button
               type="button"
               onClick={resetAll}
-              className="mt-8 inline-flex h-12 w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 text-sm font-bold text-white transition hover:border-cyan-300 hover:bg-cyan-400/20"
+              className="mt-8 inline-flex h-11 w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 text-sm font-bold text-white transition hover:border-cyan-300 hover:bg-cyan-400/20"
             >
               Reset Scoreboard
             </button>

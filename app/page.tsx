@@ -18,7 +18,7 @@ export default function Home() {
           <div className="flex flex-col gap-4 sm:flex-row">
             <Link
               href="/tiktak"
-              className="inline-flex h-14 items-center justify-center rounded-full bg-white px-8 text-base font-bold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-200"
+              className="inline-flex h-14 items-center justify-center rounded-full border border-white/30 px-8 text-base font-bold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-600"
             >
               Start New Game
             </Link>
